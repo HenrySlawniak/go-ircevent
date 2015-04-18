@@ -6,7 +6,7 @@ package irc
 
 import (
 	"crypto/tls"
-	"log"
+	"github.com/op/go-logging"
 	"net"
 	"sync"
 	"time"
@@ -38,7 +38,7 @@ type Connection struct {
 	lastMessage time.Time
 
 	VerboseCallbackHandler bool
-	Log                    *log.Logger
+	Log                    *logging.Logger
 
 	stopped bool
 }
