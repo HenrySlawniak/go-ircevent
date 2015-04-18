@@ -23,9 +23,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"log"
 	"net"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -70,7 +68,7 @@ func (irc *Connection) readLoop() {
 			}
 
 			if irc.Debug {
-				irc.Log.Printf("<-- %s\n", strings.TrimSpace(msg))
+				irc.Log.Debug("<-- %s\n", strings.TrimSpace(msg))
 			}
 
 			irc.lastMessage = time.Now()
@@ -82,7 +80,7 @@ func (irc *Connection) readLoop() {
 					msg = msg[i+1 : len(msg)]
 
 				} else {
-					irc.Log.Printf("Misformed msg from server: %#s\n", msg)
+					irc.Log.Error("Misformed msg from server: %#s\n", msg)
 				}
 
 				if i, j := strings.Index(event.Source, "!"), strings.Index(event.Source, "@"); i > -1 && j > -1 {
@@ -122,7 +120,7 @@ func (irc *Connection) writeLoop() {
 			}
 
 			if irc.Debug {
-				irc.Log.Printf("--> %s\n", strings.TrimSpace(b))
+				irc.Log.Debug("--> %s\n", strings.TrimSpace(b))
 			}
 
 			// Set a write deadline based on the time out
@@ -180,10 +178,10 @@ func (irc *Connection) Loop() {
 		if irc.stopped {
 			break
 		}
-		irc.Log.Printf("Error, disconnected: %s\n", err)
+		irc.Log.Critical("Error, disconnected: %s\n", err)
 		for !irc.stopped {
 			if err = irc.Reconnect(); err != nil {
-				irc.Log.Printf("Error while reconnecting: %s\n", err)
+				irc.Log.Critical("Error while reconnecting: %s\n", err)
 				time.Sleep(1 * time.Second)
 			} else {
 				break
@@ -369,7 +367,7 @@ func (irc *Connection) Connect(server string) error {
 	if err != nil {
 		return err
 	}
-	irc.Log.Printf("Connected to %s (%s)\n", irc.Server, irc.socket.RemoteAddr())
+	irc.Log.Info("Connected to %s (%s)\n", irc.Server, irc.socket.RemoteAddr())
 
 	irc.pwrite = make(chan string, 10)
 	irc.Error = make(chan error, 2)
@@ -400,7 +398,6 @@ func IRC(nick, user string) *Connection {
 	irc := &Connection{
 		nick:      nick,
 		user:      user,
-		Log:       log.New(os.Stdout, "", log.LstdFlags),
 		end:       make(chan struct{}),
 		Version:   VERSION,
 		KeepAlive: 4 * time.Minute,
