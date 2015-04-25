@@ -52,7 +52,7 @@ type Event struct {
 	Source     string //<host>
 	User       string //<usr>
 	Arguments  []string
-	Connection *Connection
+	Connection *Connection `json:"-"`
 }
 
 // Retrieve the last message from Event arguments.
