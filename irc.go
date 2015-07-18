@@ -401,7 +401,6 @@ func IRC(nick, user string) *Connection {
 		nick:        nick,
 		nickcurrent: nick,
 		user:        user,
-		Log:         log.New(os.Stdout, "", log.LstdFlags),
 		end:         make(chan struct{}),
 		Version:     VERSION,
 		KeepAlive:   4 * time.Minute,
